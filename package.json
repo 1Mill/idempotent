@@ -32,5 +32,8 @@
   "homepage": "https://github.com/1mill/idempotent#readme",
   "devDependencies": {
     "microbundle": "^0.13.3"
+  },
+  "dependencies": {
+    "mongodb": "^4.1.1"
   }
 }
