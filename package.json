@@ -1,6 +1,6 @@
 {
   "name": "@1mill/idempotent",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "source": "src/index.js",
   "jsnext:main": "dist/index.module.js",
