@@ -43,6 +43,10 @@ class Indempotent {
 		const collection = await this._collection()
 		const { id, source, type } = cloudevent
 
+		if (!id) throw new Error('Cloudevent "id" is required')
+		if (!source) throw new Error('Cloudevent "source" is required')
+		if (!type) throw new Error('Cloudevent "type" is required')
+
 		let stop = false
 		try {
 			await collection.insertOne({
@@ -57,11 +61,13 @@ class Indempotent {
 		return stop
 	}
 
-	async unlock({ cloudevent, failed = false }) {
+	async unlock({ cloudevent }) {
 		const collection = await this._collection()
 		const { id, source, type } = cloudevent
 
-		if (!failed) return
+		if (!id) throw new Error('Cloudevent "id" is required')
+		if (!source) throw new Error('Cloudevent "source" is required')
+		if (!type) throw new Error('Cloudevent "type" is required')
 
 		await collection.deleteMany({ id, source, type })
 	}
