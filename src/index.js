@@ -43,7 +43,7 @@ class Indempotent {
 		const collection = await this._collection()
 		const { id, source, type } = cloudevent
 
-		let stop = false
+		let failed = null
 		try {
 			await collection.insertOne({
 				createdAt: new Date(),
@@ -51,10 +51,13 @@ class Indempotent {
 				source,
 				type,
 			})
+			failed = false
 		} catch (_err) {
-			stop = true
+			failed = true
 		}
-		return stop
+
+		const success = !failed
+		return { failed, success }
 	}
 
 	async unlock({ cloudevent }) {
