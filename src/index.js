@@ -34,25 +34,24 @@ class Indempotent {
 		const collection = await this._collection()
 		await Promise.allSettled([
 			collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 3600 }),
-			collection.createIndex({ uuid: 1 }, { unique: true }),
+			collection.createIndex({ id: 1, source: 1, type: 1 }, { unique: true }),
 		])
 
 	}
 
-	_uuid({ cloudevent }) {
-		const { id, source, type } = cloudevent
-		const uuid = [type, source, id].join('::')
-		return uuid
-	}
-
 	async lock({ cloudevent }) {
 		const collection = await this._collection()
-		const uuid = this._uuid({ cloudevent })
+		const { id, source, type } = cloudevent
 
 		let stop = false
 		try {
-			await collection.insertOne({ uuid })
-		} catch (err) {
+			await collection.insertOne({
+				createdAt: new Date(),
+				id,
+				source,
+				type,
+			})
+		} catch (_err) {
 			stop = true
 		}
 		return stop
@@ -60,11 +59,11 @@ class Indempotent {
 
 	async unlock({ cloudevent, failed = false }) {
 		const collection = await this._collection()
-		const uuid = this._uuid({ cloudevent })
+		const { id, source, type } = cloudevent
 
 		if (!failed) return
 
-		await collection.deleteMany({ uuid })
+		await collection.deleteMany({ id, source, type })
 	}
 }
 
